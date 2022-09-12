@@ -32,7 +32,7 @@ delta = 0.01        ###Probability of failure
 xi = 0.01           ###Epsilon
 n_times = 100       ###Number of sample to generate for each iteration, to have a bunch of signals with almost same characteristics
 step = 0.01
-ns = range(50, 300, 50)
+ns = range(50, 550, 50)
 kind = 'QOMP'
 error_type = ""
 iterations = 5
@@ -87,7 +87,7 @@ for j in range(0, iterations, 1):
     dump_dict['quant_perc'] = quant_perc   # \< Aggiunti io, non c'erano
 
     dumped = json.dumps(dump_dict, cls=NumpyEncoder)        ###Puts in .json
-    name = 'data_dump_' + "{:.2f}".format(xi) + '_' + kind + '.json'
+    name = 'data_dump_' + "{:.2f}".format(xi) + '_' + kind + error_type + '.json'
     with open(name, 'a') as f:
         f.write(dumped + '\n')
     xi = xi + step

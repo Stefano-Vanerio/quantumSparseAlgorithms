@@ -4,7 +4,7 @@ import statsmodels.api as sm
 
 def continuing_criterium_omp(t, r, tolerance, L_thresh):
     if L_thresh != 0:
-        t <= L_thresh
+        sparsity_check = t <= L_thresh
     else:
         sparsity_check = True
     return sparsity_check and r > tolerance
