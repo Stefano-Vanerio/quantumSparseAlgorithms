@@ -4,7 +4,6 @@
 This repo contains the core code of the experiments of the quantum matching pursuit algorithm.
 This repo contains the core code of the experiments of the quantum matching pursuit algorithm, quantum orthogonal matching pursuit and MOD dictionary learning.
 
-`quantumMatchPurs.py` contains the classical matching pursuit algorithm, modified to introduce errors in the computation of the inner products.
 `create_data.py` is a script that can be used to collect the data of multiple instances of the experiment, here is possible to modify the parameters for run.
 - **delta** is the probability of failure
 - **xi** is the starting error added
