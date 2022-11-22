@@ -28,3 +28,5 @@ Using the data generated from this code it is possible to reproduce the analysis
 
 Using the data generated from this code it is possible to reproduce the analysis of our work.
 The notebooks `Error Variation.ipynb` and `Utility.ipynb` where used to obtain some graphs to visualize the results.
+
+In the folder 'N-grams' it is present the code used to test the QOMP algorithm on samples described by N-grams. The dataset had been obtained using the code of this repository(https://github.com/Arun152k/Malware-Detection-using-N-Gram-Frequency). 
