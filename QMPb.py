@@ -15,6 +15,7 @@ def MP_2(s, D, tolerance, error_type="", L_thresh=0, info='', error=0):
     # Initialize the solution vector to zeros
     x = np.zeros(M)
     phi = np.zeros(N)
+    phi_copy = np.zeros(N)
 
     # Initialize the residual
     # i.e., components not yet captured by the sparse signal
@@ -45,13 +46,11 @@ def MP_2(s, D, tolerance, error_type="", L_thresh=0, info='', error=0):
 
     if ipe_error != 0:
         if error_type == "U":
-            z_1 = z_1 + np.random.uniform(-ipe_error, ipe_error, size=M)
+            z_1 = z_1 + np.random.uniform(-ipe_error*2, ipe_error*2, size=M)
         else:
-            eps = np.random.normal(0, ipe_error/3, size=M)
-            #[ipe_error if i > ipe_error else i for i in eps]
-            #[-ipe_error if i < -ipe_error else i for i in eps]
-            while max(eps) > ipe_error or min(eps) < -ipe_error:
-                eps = np.random.normal(0, ipe_error/3, size=M)
+            eps = np.random.normal(0, ipe_error*2/3, size=M)
+            while max(eps) > (ipe_error*2) or min(eps) < (-2*ipe_error):
+                eps = np.random.normal(0, 2*ipe_error/3, size=M)
             z_1 = z_1 + eps
 
     while continuing_criterium_2(x, s_norm_squared, c, error_tolerance, L_thresh):
@@ -78,11 +77,12 @@ def MP_2(s, D, tolerance, error_type="", L_thresh=0, info='', error=0):
         jStar = np.argmax(np.abs(z))
 
         # update the solution
-        corr_z = (D[:, jStar]).dot(s)-(D[:, jStar]).dot(phi)
+        corr_z = (D[:, jStar]).dot(s)-(D[:, jStar]).dot(phi_copy)
         x[jStar] = x[jStar] + corr_z
 
         # Approximated solution
         phi = D @ x
+        phi_copy = phi
 
         # error added due to application of block encoding
         if phi_error != 0:

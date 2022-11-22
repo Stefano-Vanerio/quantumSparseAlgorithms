@@ -4,10 +4,11 @@ from QOMP import OMP
 from QMPa import MP
 from QMPb import MP_2
 from QMPc import MP_3
+from QMPc_2 import MP_4
 
 
 # Function that is called from create_data to obtain the data
-def qMP_experiment(n, m, L, q_err, kind, version, n_times, error_type, output, delta, seed=1234, L_thresh=0, ):
+def qMP_experiment(n, m, L, q_err, kind, version, n_times, error_type, output, delta, seed=1234, L_thresh=0):
     # Create a synthetic dataset
     s, D, x = make_sparse_coded_signal(n_samples=n_times,
                                        n_components=m,
@@ -54,6 +55,9 @@ def qMP_experiment(n, m, L, q_err, kind, version, n_times, error_type, output, d
         if kind == 'QMPc':
             xc, kc, resc = MP_3(s_noisy[:, i], D, tolerance, error_type, L_thresh, info='all')
             xq, kq, resq = MP_3(s_noisy[:, i], D, tolerance, error_type, L_thresh, error=q_err, info='all')
+        if kind == 'QMPc_2':
+            xc, kc, resc = MP_4(s_noisy[:, i], D, tolerance, error_type, L_thresh, info='all')
+            xq, kq, resq = MP_4(s_noisy[:, i], D, tolerance, error_type, L_thresh, error=q_err, info='all')
 
         class_sol.append(xc)            # Classical solutions together
         quant_sol.append(xq)            # Quantum solutions together
@@ -62,11 +66,11 @@ def qMP_experiment(n, m, L, q_err, kind, version, n_times, error_type, output, d
         quant_k.append(kq)              # Sparsity obtained quantumly together
 
         if kind == 'QOMP':
-            class_residuals.append(np.linalg.norm(s[:, i] - A_c @ xc_a))  # Residual left classically
-            quant_residuals.append(np.linalg.norm(s[:, i] - A_q @ xq_a))  # Residual left quantumly
+            class_residuals.append(np.linalg.norm(s_noisy[:, i] - A_c @ xc_a))  # Residual left classically
+            quant_residuals.append(np.linalg.norm(s_noisy[:, i] - A_q @ xq_a))  # Residual left quantumly
         else:
-            class_residuals.append(np.linalg.norm(s[:, i] - D @ xc))    # Residual left classically
-            quant_residuals.append(np.linalg.norm(s[:, i] - D @ xq))    # Residual left quantumly
+            class_residuals.append(np.linalg.norm(s_noisy[:, i] - D @ xc))    # Residual left classically
+            quant_residuals.append(np.linalg.norm(s_noisy[:, i] - D @ xq))    # Residual left quantumly
         
         class_residuals_full.append(resc)               # All residuals scaled classically
         quant_residuals_full.append(resq)               # All residuals scaled quantumly
@@ -98,14 +102,15 @@ def qMP_experiment(n, m, L, q_err, kind, version, n_times, error_type, output, d
 
 def quantum_runtime(k, n, m, xi, delta, kind, D, s):
     if kind == 'QMPa':
-        return k*n*np.log(n) + k*np.sqrt(m)*(1/xi)*np.log(3*k*m/delta)*np.log(n*m)
+        return k*n*np.log(n) + k*np.sqrt(m)*(1/xi)
     if kind == 'QMPb':
-        return k * n + k * linear_search(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s) * np.log(6*k*m/delta)**2 * np.log(1/delta) ** 2 * np.log(n*m)
-        # k * best_mu(D) * np.linalg.cond(D) * (1/np.linalg.norm(D, 2)) * np.sqrt(m)*(1/xi)  #* np.log(3*k*m/delta)*np.log(n*m) RUNTIME WITH NORM OF D
+        return k * n + k * linear_search(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s)
     if kind == 'QMPc':
-        return k * linear_search(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s) * np.log(6*k*m/delta)**2 * np.log(1/delta) ** 2 * np.log(n*m)
+        return k * linear_search(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s)
+    if kind == 'QMPc_2':
+        return k * linear_search(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s)
     if kind == 'QOMP':
-        return k * linear_search(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s) * np.log(7*k*m/delta)**2 * np.log(1/delta) ** 3 * np.log(n*m)
+        return k * linear_search(D)* np.linalg.cond(D) * np.sqrt(m)*(1/xi) * np.linalg.norm(s)
 
 
 def linear_search(matrix, start=0.0, end=1.0, step=0.05):
@@ -127,7 +132,6 @@ def __mu(p, matrix):
     s1 = s(2 * p, matrix)
     s2 = s(2 * (1 - p), matrix.T)
     mu = np.sqrt(s1 * s2)
-
     return mu
 
 

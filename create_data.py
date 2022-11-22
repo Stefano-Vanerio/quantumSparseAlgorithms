@@ -2,11 +2,11 @@
 # coding: utf-8
 
 #### Uses quantumMatchPurs to collect data and store them in a file: dump.json
+import os
 
 from experiment import qMP_experiment
 import numpy as np
 import json
-
 
 # Storing the results
 class NumpyEncoder(json.JSONEncoder):
@@ -29,13 +29,13 @@ def classical_runtime(k, n, m): ###Computes the classical runtime
 
 # Parameters to modify
 delta = 0.01        ###Probability of failure
-xi = 0.01           ###Epsilon
+xi = 0.005           ###Epsilon
 n_times = 100       ###Number of sample to generate for each iteration, to have a bunch of signals with almost same characteristics
-step = 0.01
-ns = range(50, 550, 50)
+step = 0.005
+ns = range(50, 1050, 50)
 kind = 'QOMP'
-error_type = ""
-iterations = 5
+error_type = "U"
+iterations = 10
 
 run_t = []              ###Median and standard deviation of classical runtime
 qrun_t = []             ###Median and standard deviation of quantum runtime
@@ -83,12 +83,15 @@ for j in range(0, iterations, 1):
     dump_dict['quant_residuals_full'] = resq
     dump_dict['class_runtime'] = run_t
     dump_dict['quant_runtime'] = qrun_t
-    dump_dict['class_perc'] = class_perc   # \< Aggiunti io, non c'erano
-    dump_dict['quant_perc'] = quant_perc   # \< Aggiunti io, non c'erano
+    dump_dict['class_perc'] = class_perc
+    dump_dict['quant_perc'] = quant_perc
 
     dumped = json.dumps(dump_dict, cls=NumpyEncoder)        ###Puts in .json
-    name = 'data_dump_' + "{:.2f}".format(xi) + '_' + kind + error_type + '.json'
-    with open(name, 'a') as f:
+    save_path = 'Results'
+
+    name = 'data_dump_' + "{:.3f}".format(xi) + '_' + kind + error_type + '_R.json'
+    completeName = os.path.join(save_path, name)
+    with open(completeName, 'w') as f:
         f.write(dumped + '\n')
     xi = xi + step
 

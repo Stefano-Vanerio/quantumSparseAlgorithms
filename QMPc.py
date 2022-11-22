@@ -45,11 +45,11 @@ def MP_3(s, D, tolerance, error_type="", L_thresh=0, info='', error=0):
 
     if ipe_error != 0:
         if error_type == "U":
-            z_1 = z_1 + np.random.uniform(-ipe_error, ipe_error, size=M)
+            z_1 = z_1 + np.random.uniform(-ipe_error*2, ipe_error*2, size=M)
         else:
-            eps = np.random.normal(0, ipe_error/3, size=M)
-            while max(eps) > ipe_error or min(eps) < -ipe_error:
-                eps = np.random.normal(0, ipe_error/3, size=M)
+            eps = np.random.normal(0, ipe_error*2/3, size=M)
+            while max(eps) > (ipe_error*2) or min(eps) < (-2*ipe_error):
+                eps = np.random.normal(0, ipe_error*2/3, size=M)
             z_1 = z_1 + eps
 
     while continuing_criterium_3(x, s_norm_squared, c, error_tolerance, L_thresh):
